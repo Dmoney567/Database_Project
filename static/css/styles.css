@@ -29,3 +29,10 @@ ul {
     padding: 15px;
     border-radius: 5px;
 }
+
+.flex{
+    flex: auto;
+    flex-direction: column;
+    
+
+}

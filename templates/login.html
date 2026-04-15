@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Supply Chain Database</title>
+    <link
+      rel="stylesheet" href="{{ url_for('static', path='css/login.css') }}"/>
+  </head>
+  <body>
+   
+    <section id="home" class="section">
+    <div class="mainHorizontalLayout">
+      <div class="mainVerticalLayout">
+        <div class="headerMessage">
+          <div class="loginContainer">
+            
+            <div class="horizontalFlex">
+                
+              <form id="auth_form" action="{{url_for('login')}}" method="post">
+                <div class="verticalFlex">
+                  <h1>Supply Chain Database</h1>
+                  <h2>Log In</h2>
+                  <input
+                    type="text"
+                    class="usernameInput"
+                    placeholder="username"
+                    name="username"
+                  />
+                  <input
+                    type="text"
+                    class="passwordInput"
+                    placeholder="password"
+                    name="password"
+                  />
+                  <div class="horizontalButtonFlex">
+                    <input
+                      name="submit"
+                      value="Login"
+                      type="submit"
+                      onclick="setActionForm('login')"
+                      class="btn"
+                    />
+
+                    <input
+                      name="register"
+                      value="Register"
+                      type="submit"
+                      onclick="setActionForm('register')"
+                      class="btn"
+                    />
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class = "imageContainer"><img src="static/images/arno-senoner-yqu6tJkSQ_k-unsplash.jpg" >
+    
+    
+     </div>
+
+      
+
+
+    </div>
+  </body>
+</html>
