@@ -42,10 +42,40 @@ def init_db():
                     raw_mat_id INT PRIMARY KEY,
                     raw_mat_name VARCHAR(100) NOT NULL,
                     raw_mat_quantity INT NOT NULL
-                );"""
-
-
-                );}
+                )""",
+                "Production_Order":
+                """CREATE TABLE IF NOT EXISTS PRODUCTION_ORDER (
+                    order_id INT PRIMARY KEY,
+                    order_placed_date DATE,
+                    order_due_date DATE,
+                    order_status VARCHAR(20) NOT NULL,
+                    order_production_flag BOOLEAN,
+                    vend_id INT
+                )""",
+                "Production_Order_Part":
+                """CREATE TABLE IF NOT EXISTS PRODUCTION_ORDER_PART(
+                    order_id INT,
+                    part_id INT,
+                    quantity INT NOT NULL,
+                    unit_price DECIMAL(10,2)
+                )""",
+                "Bill_Of_Materials":
+                """CREATE TABLE IF NOT EXISTS BILL_OF_MATERIALS(
+                    raw_mat_id INT PRIMARY KEY,
+                    part_id INT PRIMARY KEY,
+                    quantity INT NOT NULL,
+                    
+                )""",
+                "Production_Report":
+                """CREATE TABLE IF NOT EXISTS PRODUCTION_REPORT(
+                    report_id INT PRIMARY KEY,
+                    report_date DATE NOT NULL,
+                    part_id INT NOT NULL,
+                    num_parts_finished INT NOT NULL,
+                    production_status BOOLEAN NOT NULL,
+                    estimated_completion_date DATE,
+                    stage_id INT 
+                )""",}
     
     
 
@@ -54,7 +84,7 @@ def init_db():
             print(f"Table '{name}' verified/created.")
 
     #seed data
-    #cursor.execute("INSERT IGNORE INTO Ters VALUES (1,'Standerd',5.00),
+    #cursor.execute("INSERT IGNORE INTO Tiers VALUES (1,'Standerd',5.00),
     # (2)") etc etc
 
         conn.commit()

@@ -85,7 +85,7 @@ async def create_division(request: Request):
 
     try:
         cursor.execute(
-            "INSERT INTO Divisions (name) VALUES (%s)",
+            "INSERT INTO Production_Stage (name) VALUES (%s)",
             (name,)
         )
         conn.commit()
