@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>Supply Chain Database</title>
+
     <link rel="stylesheet" href="{{ url_for('static', path='css/styles.css') }}">
 </head>
+
 <body>
 
 <header>
@@ -15,37 +17,80 @@
 </header>
 
 <main>
-    <!--Create new entries-->
-    <p>Create a new production order here</p>
-    <form>
 
-    </form>
+    <!-- CREATE -->
+    <section>
+        <h2>Create Production Order</h2>
+        <p>Create a new production order here</p>
 
-    <!-- read existing entries -->
-    <p>Check for status of production orders here</p>
-    <form>
-        <label for "ProductionID"> ProductionID</label>
-        <input type = "text" id = "productionID" name = "productionID" value = "..Enter Order ID">
-        <input type = "submit" value = "Submit">
-    </form>
-    <div>
-        Display Order status here
-    </div>
+        <form method="POST" action="/orders/create">
+            <label for="productName">Product Name</label>
+            <input type="text" id="productName" name="productName" placeholder="Enter product name" required>
 
-    <!--Update existing entries--> 
-    <P>Update an existing orders</P>
-    
+            <label for="quantity">Quantity</label>
+            <input type="number" id="quantity" name="quantity" placeholder="Enter quantity" required>
 
-    <!--Delete exisitng entries-->
-    <P>Delete an existing orders</P>
+            <button type="submit">Create Order</button>
+        </form>
+    </section>
 
+    <hr>
 
+    <!-- READ -->
+    <section>
+        <h2>Check Order Status</h2>
+        <p>Search for production order status</p>
 
+        <form method="GET" action="/orders/status">
+            <label for="productionID">Production ID</label>
+            <input type="text" id="productionID" name="productionID" placeholder="Enter Order ID" required>
+
+            <button type="submit">Submit</button>
+        </form>
+
+        <div id="orderStatusDisplay">
+            <!-- Backend will inject or JS will populate here -->
+            <p>Order status will display here...</p>
+        </div>
+    </section>
+
+    <hr>
+
+    <!-- UPDATE -->
+    <section>
+        <h2>Update Order</h2>
+        <p>Update an existing production order</p>
+
+        <form method="POST" action="/orders/update">
+            <label for="updateID">Order ID</label>
+            <input type="text" id="updateID" name="updateID" placeholder="Enter Order ID" required>
+
+            <label for="newQuantity">New Quantity</label>
+            <input type="number" id="newQuantity" name="newQuantity" placeholder="Enter new quantity">
+
+            <button type="submit">Update Order</button>
+        </form>
+    </section>
+
+    <hr>
+
+    <!-- DELETE -->
+    <section>
+        <h2>Delete Order</h2>
+        <p>Remove an existing production order</p>
+
+        <form method="POST" action="/orders/delete">
+            <label for="deleteID">Order ID</label>
+            <input type="text" id="deleteID" name="deleteID" placeholder="Enter Order ID" required>
+
+            <button type="submit">Delete</button>
+        </form>
+    </section>
 
 </main>
 
 <footer>
-    <p>©2026 Database Project</p>
+    <p>© 2026 Database Project</p>
 </footer>
 
 </body>

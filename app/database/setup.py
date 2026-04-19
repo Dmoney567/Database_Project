@@ -2,9 +2,10 @@ import mysql.connector
 import os
 from dotenv import load_dotenv
 
+
+
+
 load_dotenv()
-
-
 def init_db():
     """connnects to mysql server, create database, defines table schema and insert seed data."""
 
@@ -21,61 +22,87 @@ def init_db():
         cursor.execute(f"Use {os.getenv('DB_NAME')}")
 
 
-        tables = {"Production_Stage":
-                """CREATE TABLE IF NOT EXISTS PRODUCTION_STAGE (
+        tables = {  
+            "User": """
+                CREATE TABLE IF NOT EXISTS USERS (
+                user_id INT AUTO_INCREMENT PRIMARY KEY,
+                username VARCHAR(50) UNIQUE NOT NULL,
+                password_hash VARCHAR(255) NOT NULL
+                )
+            """,
+            
+            "Production_Stage": """
+                CREATE TABLE IF NOT EXISTS PRODUCTION_STAGE (
                     stage_id INT PRIMARY KEY,
                     stage_name VARCHAR(100) NOT NULL,
                     stage_capacity INT NOT NULL,
-                    production_time INT NOT NULL)
-                """,
-                "Vendor":
-                """CREATE TABLE IF NOT EXISTS VENDOR (
+                    production_time INT NOT NULL
+                )
+            """,
+
+            "Vendor": """
+                CREATE TABLE IF NOT EXISTS VENDOR (
                     vendor_id INT PRIMARY KEY,
                     vend_name VARCHAR(100) NOT NULL,
                     vend_address VARCHAR(255),
                     vend_phone VARCHAR(20),
                     vend_email VARCHAR(100)
                 )
-                """,
-                "Raw_Material":
-                """CREATE TABLE IF NOT EXISTS RAW_MATERIAL (
+            """,
+
+            "Raw_Material": """
+                CREATE TABLE IF NOT EXISTS RAW_MATERIAL (
                     raw_mat_id INT PRIMARY KEY,
                     raw_mat_name VARCHAR(100) NOT NULL,
                     raw_mat_quantity INT NOT NULL
-                )""",
-                "Production_Order":
-                """CREATE TABLE IF NOT EXISTS PRODUCTION_ORDER (
+                )
+            """,
+
+            "Production_Order": """
+                CREATE TABLE IF NOT EXISTS PRODUCTION_ORDER (
                     order_id INT PRIMARY KEY,
                     order_placed_date DATE,
                     order_due_date DATE,
                     order_status VARCHAR(20) NOT NULL,
                     order_production_flag BOOLEAN,
-                    vend_id INT
-                )""",
-                "Production_Order_Part":
-                """CREATE TABLE IF NOT EXISTS PRODUCTION_ORDER_PART(
+                    vend_id INT,
+                    FOREIGN KEY (vend_id) REFERENCES VENDOR(vendor_id)
+                )
+            """,
+
+            "Production_Order_Part": """
+                CREATE TABLE IF NOT EXISTS PRODUCTION_ORDER_PART (
                     order_id INT,
                     part_id INT,
                     quantity INT NOT NULL,
-                    unit_price DECIMAL(10,2)
-                )""",
-                "Bill_Of_Materials":
-                """CREATE TABLE IF NOT EXISTS BILL_OF_MATERIALS(
-                    raw_mat_id INT PRIMARY KEY,
-                    part_id INT PRIMARY KEY,
+                    unit_price DECIMAL(10,2),
+                    PRIMARY KEY (order_id, part_id),
+                    FOREIGN KEY (order_id) REFERENCES PRODUCTION_ORDER(order_id)
+                )
+            """,
+
+            "Bill_Of_Materials": """
+                CREATE TABLE IF NOT EXISTS BILL_OF_MATERIALS (
+                    raw_mat_id INT,
+                    part_id INT,
                     quantity INT NOT NULL,
-                    
-                )""",
-                "Production_Report":
-                """CREATE TABLE IF NOT EXISTS PRODUCTION_REPORT(
+                    PRIMARY KEY (raw_mat_id, part_id),
+                    FOREIGN KEY (raw_mat_id) REFERENCES RAW_MATERIAL(raw_mat_id)
+                )
+            """,
+
+            "Production_Report": """
+                CREATE TABLE IF NOT EXISTS PRODUCTION_REPORT (
                     report_id INT PRIMARY KEY,
                     report_date DATE NOT NULL,
                     part_id INT NOT NULL,
                     num_parts_finished INT NOT NULL,
                     production_status BOOLEAN NOT NULL,
                     estimated_completion_date DATE,
-                    stage_id INT 
-                )""",}
+                    stage_id INT,
+                    FOREIGN KEY (stage_id) REFERENCES PRODUCTION_STAGE(stage_id)
+                )
+            """}
     
     
 
