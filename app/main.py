@@ -103,9 +103,16 @@ async def register(request: Request):
 
     return RedirectResponse(url="/login", status_code=302)  
 
+##default dashboard
 @app.get("/dashboard")
 async def dashboard(request: Request):
+    return templates.TemplateResponse(request=request,name="dashboard.html",context={"request": request})
 
+
+
+##nested routes
+@app.get("/dashboard/vendors")
+async def vendors(request:Request):
     conn = get_db_conn()
     cursor = conn.cursor(dictionary=True)
     try:
@@ -134,12 +141,14 @@ async def dashboard(request: Request):
     finally:
         cursor.close()
         conn.close()
-    return RedirectResponse(url="/",status_code = 303)
+    return RedirectResponse(url="/",status_code = 303)   
+
+
 
 
 #write operation
-@app.post("/divisions/create")
-async def create_division(request: Request):
+@app.post("/production_stage/create")
+async def create_production_stage(request: Request):
     form = await request.form()
     name = form["name"]
 

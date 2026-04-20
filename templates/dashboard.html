@@ -12,7 +12,7 @@
 <header>
     <h1>Supply Chain Database</h1>
     <nav>
-        <a href="/">Home</a>
+        <a href="/" class = logoutLink>Log Out</a>
     </nav>
 </header>
 
@@ -20,32 +20,20 @@
 
     <!-- Tab links -->
     <div class="tab">
-    <button class="tablinks" onclick="openCity(event, 'London')">Production Orders</button>
-    <button class="tablinks" onclick="openCity(event, 'Paris')">Vendors</button>
-    <button class="tablinks" onclick="openCity(event, 'Tokyo')">Daily Summary</button>
+    <button class="tablinks" onclick="showData(event, 'Production_orders')">Production Orders</button>
+    <button class="tablinks" onclick="showData(event, 'Vendors')">Vendors</button>
+    <button class="tablinks" onclick="showData(event, 'Production_report')">Production Report</button>
+     <button class="tablinks" onclick="showData(event, 'Inventory')">Inventory</button>
     </div>
 
-    <!-- Tab content -->
-    <div id="London" class="tabcontent">
-    <h3>Production Orders</h3>
-    <p>London is the capital city of England.</p>
-    </div>
-
-    <div id="Paris" class="tabcontent">
-    <h3>Vendors</h3>
-    <p>Paris is the capital of France.</p>
-    </div>
-
-    <div id="Tokyo" class="tabcontent">
-    <h3>Daily Summary</h3>
-    <p>Tokyo is the capital of Japan.</p>
-    </div>
+ 
+    
     
 
 </main>
 
 <script>
-function openCity(evt, cityName) {
+function showData(evt, cityName) {
   var i, tabcontent, tablinks;
   tabcontent = document.getElementsByClassName("tabcontent");
   for (i = 0; i < tabcontent.length; i++) {
