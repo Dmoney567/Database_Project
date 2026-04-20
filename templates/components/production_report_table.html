@@ -6,27 +6,29 @@
     <thead>
         <tr>
             <!-- table display must match database table schema!!!!! -->
-            <th>Production Order ID</th>
-            <th>Order Placed Date</th>
-            <th>Order Due Date</th>
-            <th>Status</th>
-            <th>Production Flag</th>
-            <th>Vendor ID</th>
+            <th>Report ID</th>
+            <th>Report Date</th>
+            <th>Part ID</th>
+            <th>Parts Finished</th>
+            <th>Production Status</th>
+            <th>Estimated Completion Date</th>
+            <th>Stage ID</th>
         </tr>
     </thead>
     <tbody>
-        {% for order in orders %}
+        {% for report in reports %}
         <tr>
-            <td>{{ order.order_id }}</td>
-            <td>{{ order.placed_date }}</td>
-            <td>{{ order.due_date }}</td>
-            <td>{{ order.status }}</td>
-            <td>{{ order.production_flag }}</td>
-            <td>{{ order.vendor_id }}</td>
+            <td>{{ report.report_id }}</td>
+            <td>{{ report.report_date }}</td>
+            <td>{{ report.part_id }}</td>
+            <td>{{ report.num_parts_finished }}</td>
+            <td>{{ report.production_status }}</td>
+            <td>{{ report.estimated_completion_date }}</td>
+            <td>{{ report.stage_id}}</td>
         </tr>
         {% else %}
         <tr>
-            <td colspan="4">No orders found.</td>
+            <td colspan="4">No reports found.</td>
         </tr>
         {% endfor %}
     </tbody>

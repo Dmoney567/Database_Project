@@ -6,27 +6,26 @@
     <thead>
         <tr>
             <!-- table display must match database table schema!!!!! -->
-            <th>Production Order ID</th>
-            <th>Order Placed Date</th>
-            <th>Order Due Date</th>
-            <th>Status</th>
-            <th>Production Flag</th>
             <th>Vendor ID</th>
+            <th>Vendor Name</th>
+            <th>Vendor Address</th>
+            <th>Vendor Phone</th>
+            <th>Production Flag</th>
+            <th>Vendor Email</th>
         </tr>
     </thead>
     <tbody>
-        {% for order in orders %}
+        {% for vendor in vendors %}
         <tr>
-            <td>{{ order.order_id }}</td>
-            <td>{{ order.placed_date }}</td>
-            <td>{{ order.due_date }}</td>
-            <td>{{ order.status }}</td>
-            <td>{{ order.production_flag }}</td>
-            <td>{{ order.vendor_id }}</td>
+            <td>{{ vendor.vend_id }}</td>
+            <td>{{ vendor.vend_name }}</td>
+            <td>{{ vendor.vend_address }}</td>
+            <td>{{ vendor.vend_phone }}</td>
+            <td>{{ vendor.vend_email }}</td>
         </tr>
         {% else %}
         <tr>
-            <td colspan="4">No orders found.</td>
+            <td colspan="4">No vendors found.</td>
         </tr>
         {% endfor %}
     </tbody>
