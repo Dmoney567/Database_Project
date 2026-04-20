@@ -8,6 +8,9 @@
       rel="stylesheet" href="{{ url_for('static', path='css/login.css') }}"/>
   </head>
   <body>
+    <div id="toast" style="display:none;"></div>
+
+    
    
     <section id="home" class="section">
     <div class="mainHorizontalLayout">
@@ -36,17 +39,17 @@
                   <div class="horizontalButtonFlex">
                     <input
                       name="submit"
-                      value="Login"
+                      value="login"
                       type="submit"
-                      onclick="setActionForm('login')"
+                      onmousedown="setActionForm('login')"
                       class="btn"
                     />
 
                     <input
                       name="register"
-                      value="Register"
+                      value="register"
                       type="submit"
-                      onclick="setActionForm('register')"
+                      onMousedown="setActionForm('register')"
                       class="btn"
                     />
                   </div>
@@ -61,9 +64,38 @@
     
      </div>
 
-      
+ <script>
+  function setActionForm(type) {
+    const form = document.getElementById("auth_form");
+    form.action = type === "register" ? "/register" : "/login";
+  }
 
+  function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.innerText = message;
+      toast.style.display = "block";
+      toast.classList.remove("hide");
 
-    </div>
+      setTimeout(() => {
+          toast.classList.add("hide");
+      }, 3000);
+
+      setTimeout(() => {
+          toast.style.display = "none";
+          toast.classList.remove("hide");
+      }, 3500);
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const error = params.get("error");
+  if (error === "invalid") {
+      showToast("Invalid username or password.");
+  } else if (error === "empty") {
+      showToast("Username and password cannot be empty.");
+  }else if (error == "exists"){
+      showToast("Username already exists")
+  }
+</script>
+
   </body>
 </html>

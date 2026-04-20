@@ -2,26 +2,20 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-
 import os
 from mysql.connector import pooling
 from dotenv import load_dotenv
-
 from starlette.middleware.sessions import SessionMiddleware
+from passlib.context import CryptContext
+import random
 
 
-
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 #load environment variables
 load_dotenv()
-
 app = FastAPI(title = "Supply Chain Database")
-
-# Templates
 templates = Jinja2Templates(directory="templates")
-
-# Mount the static folder at /static
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
 
 app.add_middleware(
     SessionMiddleware,
@@ -67,40 +61,47 @@ async def login(request:Request):
     ##connect to database user table
     user = get_user(username)
     ##check if user exists
-    if user and user.check_password(password):
+    if user and verify_password(password, user["password_hash"]):
         request.session["username"] = username
         return RedirectResponse(url="/dashboard", status_code=302)
     ##if not, redirect to login page
     else:
-        return templates.TemplateResponse(request = request, name = "login.html")
+        return RedirectResponse(url="/login?error=invalid", status_code=302)
+        ##return templates.TemplateResponse(request = request, name = "login.html")
 
 #register button for storing a new user into db or checking if they exist already
 @app.post("/register")
-async def register(request:Request):
+async def register(request: Request):
     form = await request.form()
+  
     username = form["username"]
-    password = form["password"]
-    ## search user database for existing username
+    password = str(form["password"]) 
+
+    ##ensuring no null username or passwords work
+    if not username or not password:
+        return RedirectResponse(url="/login?error=empty", status_code=302)
+
+    ##check for a pre-existing user
     user = get_user(username)
-    ##user already exists
     if user:
-        return JSONResponse(status_code=409,content={"detail": "Username already exists"})
-    ##if not, register the user by storing them in the user database
-    else:
-        conn = get_db_conn()
-        cursor = conn.cursor(dictionary=True)
+        return RedirectResponse(url="/login?error=exists", status_code=302)
+    
+    hashed_password = hash_password(password)
 
-        try:
-            cursor.execute("INSERT INTO USERS (username,password) VALUES (%s,%s)",(username,password))
+    conn = get_db_conn()
+    cursor = conn.cursor()
 
-            conn.commit()
-        
-        finally:
-            cursor.close()
-            conn.close()
+    try:
+        cursor.execute(
+            "INSERT INTO USERS (username, password_hash) VALUES (%s, %s)",
+            (username, hashed_password)
+        )
+        conn.commit()
+    finally:
+        cursor.close()
+        conn.close()
 
-    return templates.TemplateResponse(request = request, name = "login.html")
-
+    return RedirectResponse(url="/login", status_code=302)  
 
 @app.get("/dashboard")
 async def dashboard(request: Request):
@@ -108,12 +109,12 @@ async def dashboard(request: Request):
     conn = get_db_conn()
     cursor = conn.cursor(dictionary=True)
     try:
-        cursor.execute("SELECT * FROM Divisions")
+        cursor.execute("SELECT * FROM PRODUCTION_STAGE")
         divisions = cursor.fetchall()
 
         query = ("""
-            SELECT * FROM Rentals
-            WHERE return_date IS NULL""")
+            SELECT * FROM VENDOR
+            WHERE vend_name IS NULL""")
         cursor.execute(query)
         active_rentals = cursor.fetchall()
 
@@ -121,8 +122,8 @@ async def dashboard(request: Request):
             request = request,
             name="dashboard.html",
             context={
-                "divisions": divisions,
-                "active_rentals": active_rentals
+                "PRODUCTION_STAGE": divisions,
+                "VENDOR": active_rentals
                 }
         )
     except Exception as e:
@@ -164,12 +165,22 @@ def get_user(username):
     cursor = conn.cursor(dictionary=True)
 
     try:
-        cursor.execute("SELECT * FROM USERS WHERE username = %s",username)
+        cursor.execute("SELECT user_id,username, password_hash FROM USERS WHERE username = %s",(username,))
         return cursor.fetchone()
     
     finally:
         cursor.close()
         conn.close()
+
+def hash_password(password: str):
+    return pwd_context.hash(password)
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+
+
 
 # ### demo of 5 unique category of operations that will specifically require access to the
 # database (The following five operations are mandatory)
