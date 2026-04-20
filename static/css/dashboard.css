@@ -107,7 +107,7 @@ tr:hover {
     border-color: #555;
 }
 
-.searchButton {
+.btn {
     padding: 10px 20px;
     background-color: #333;
     color: white;
@@ -118,6 +118,19 @@ tr:hover {
     white-space: nowrap;
 }
 
-.searchButton:hover {
+.btn:hover {
     background-color: #555;
+}
+
+
+
+.modifyButtons {
+  display: flex;
+  gap: 8px;
+  margin-top: 1.25rem;
+}
+
+.header{
+  display:flex;
+  flex-direction: row;
 }
