@@ -110,62 +110,10 @@ async def dashboard(request: Request):
 
 
 
-##nested routes
-@app.get("/dashboard/vendors")
-async def vendors(request:Request):
-    conn = get_db_conn()
-    cursor = conn.cursor(dictionary=True)
-    try:
-        cursor.execute("SELECT * FROM PRODUCTION_STAGE")
-        divisions = cursor.fetchall()
-
-        query = ("""
-            SELECT * FROM VENDOR
-            WHERE vend_name IS NULL""")
-        cursor.execute(query)
-        active_rentals = cursor.fetchall()
-
-        return templates.TemplateResponse(
-            request = request,
-            name="dashboard.html",
-            context={
-                "PRODUCTION_STAGE": divisions,
-                "VENDOR": active_rentals
-                }
-        )
-    except Exception as e:
-         conn.rollback()
-         print(f"Transaction Failed: {e}")
-
-    #close cursor connection
-    finally:
-        cursor.close()
-        conn.close()
-    return RedirectResponse(url="/",status_code = 303)   
 
 
 
 
-#write operation
-@app.post("/production_stage/create")
-async def create_production_stage(request: Request):
-    form = await request.form()
-    name = form["name"]
-
-    conn = get_db_conn()
-    cursor = conn.cursor()
-
-    try:
-        cursor.execute(
-            "INSERT INTO Production_Stage (stage_name) VALUES (%s)",
-            (name,)
-        )
-        conn.commit()
-    finally:
-        cursor.close()
-        conn.close()
-
-    return RedirectResponse("/dashboard", status_code=303)
 
 
 

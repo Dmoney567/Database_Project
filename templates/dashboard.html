@@ -25,33 +25,55 @@
     <button class="tablinks" onclick="showData(event, 'Production_report')">Production Report</button>
      <button class="tablinks" onclick="showData(event, 'Inventory')">Inventory</button>
     </div>
+       
+  
+    
+    <div id="Production_orders" class="tab-content">
+        {% include "components/production_order_table.html" %}
+    </div>
+    <div id="Vendors" class="tab-content">
+        {% include "components/vendor_table.html" %}
+    </div>
 
- 
-    
-    
+    <div id="Production_report" class="tab-content">
+        {% include "components/production_report_table.html" %}
+    </div>
+
+    <div id="Inventory" class="tab-content">
+        {% include "components/inventory_table.html" %}
+    </div>
+
+
+
+
 
 </main>
 
+
 <script>
-function showData(evt, cityName) {
-  var i, tabcontent, tablinks;
-  tabcontent = document.getElementsByClassName("tabcontent");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
-  tablinks = document.getElementsByClassName("tablinks");
-  for (i = 0; i < tablinks.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" active", "");
-  }
-  document.getElementById(cityName).style.display = "block";
-  evt.currentTarget.className += " active";
-}
+    function showData(evt, tabName) {
+        // Hide all tab content
+        document.querySelectorAll('.tab-content').forEach(tab => {
+            tab.style.display = 'none';
+        });
+
+        // Remove 'active' class from all tab buttons
+        document.querySelectorAll('.tablinks').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // Show the selected tab and mark button as active
+        document.getElementById(tabName).style.display = 'block';
+        evt.currentTarget.classList.add('active');
+    }
+
+    // Open the first tab by default on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelector('.tablinks').click();
+    });
 </script>
 
 
-<footer>
-    <p>© 2026 Database Project</p>
-</footer>
 
 </body>
 </html>

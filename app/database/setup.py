@@ -21,7 +21,6 @@ def init_db():
         cursor.execute(f"CREATE DATABASE IF NOT EXISTS {os.getenv('DB_NAME')}")
         cursor.execute(f"Use {os.getenv('DB_NAME')}")
 
-
         tables = {  
             "User": """
                 CREATE TABLE IF NOT EXISTS USERS (
@@ -33,7 +32,7 @@ def init_db():
             
             "Production_Stage": """
                 CREATE TABLE IF NOT EXISTS PRODUCTION_STAGE (
-                    stage_id INT PRIMARY KEY,
+                    stage_id INT AUTO_INCREMENT PRIMARY KEY,
                     stage_name VARCHAR(100) NOT NULL,
                     stage_capacity INT NOT NULL,
                     production_time INT NOT NULL
@@ -42,7 +41,7 @@ def init_db():
 
             "Vendor": """
                 CREATE TABLE IF NOT EXISTS VENDOR (
-                    vendor_id INT PRIMARY KEY,
+                    vend_id INT AUTO_INCREMENT PRIMARY KEY,
                     vend_name VARCHAR(100) NOT NULL,
                     vend_address VARCHAR(255),
                     vend_phone VARCHAR(20),
@@ -52,7 +51,7 @@ def init_db():
 
             "Raw_Material": """
                 CREATE TABLE IF NOT EXISTS RAW_MATERIAL (
-                    raw_mat_id INT PRIMARY KEY,
+                    raw_mat_id INT AUTO_INCREMENT PRIMARY KEY,
                     raw_mat_name VARCHAR(100) NOT NULL,
                     raw_mat_quantity INT NOT NULL
                 )
@@ -60,13 +59,13 @@ def init_db():
 
             "Production_Order": """
                 CREATE TABLE IF NOT EXISTS PRODUCTION_ORDER (
-                    order_id INT PRIMARY KEY,
+                    order_id INT AUTO_INCREMENT PRIMARY KEY,
                     order_placed_date DATE,
                     order_due_date DATE,
                     order_status VARCHAR(20) NOT NULL,
                     order_production_flag BOOLEAN,
                     vend_id INT,
-                    FOREIGN KEY (vend_id) REFERENCES VENDOR(vendor_id)
+                    FOREIGN KEY (vend_id) REFERENCES VENDOR(vend_id)
                 )
             """,
 
@@ -93,7 +92,7 @@ def init_db():
 
             "Production_Report": """
                 CREATE TABLE IF NOT EXISTS PRODUCTION_REPORT (
-                    report_id INT PRIMARY KEY,
+                    report_id INT AUTO_INCREMENT PRIMARY KEY,
                     report_date DATE NOT NULL,
                     part_id INT NOT NULL,
                     num_parts_finished INT NOT NULL,
@@ -103,7 +102,6 @@ def init_db():
                     FOREIGN KEY (stage_id) REFERENCES PRODUCTION_STAGE(stage_id)
                 )
             """}
-    
     
 
         for name,ddl in tables.items():
