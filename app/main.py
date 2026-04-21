@@ -64,9 +64,7 @@ async def login(request:Request):
     password = form["password"]
     ##connect to database user table
     user = get_user(username)
-    ##check if tables exist
-    if user is None:
-        return RedirectResponse(url="/login?error=db_not_initialized", status_code=302)
+
     ##check if user exists
     if user and verify_password(password, user["password_hash"]):
         request.session["username"] = username
@@ -119,6 +117,15 @@ async def dashboard(request: Request):
     cursor.execute("SELECT * FROM PRODUCTION_ORDER")
     orders = cursor.fetchall()
 
+    cursor.execute("SELECT * FROM VENDOR")
+    vendors = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM PRODUCTION_REPORT")
+    reports = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM RAW_MATERIAL")
+    inventory = cursor.fetchall()
+
     cursor.close()
     conn.close()
 
@@ -127,10 +134,13 @@ async def dashboard(request: Request):
         name="dashboard.html",
         context={
             "request": request,
-            "orders": orders
+            "orders": orders,
+            "vendors": vendors,
+            "reports":reports,
+            "inventory":inventory
         }
     )
-    ##return templates.TemplateResponse(request=request,name="dashboard.html",context={"request": request})
+
 
 
 
@@ -158,11 +168,3 @@ def verify_password(plain_password, hashed_password):
 
 
 
-# ### demo of 5 unique category of operations that will specifically require access to the
-# database (The following five operations are mandatory)
-# ▪ Create new entries
-# ▪ Read existing entries
-# ▪ Update existing entries
-# ▪ Delete existing entries
-# ▪ Search entries or perform user authentication (user validation through log-in
-# operations)

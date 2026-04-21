@@ -22,13 +22,18 @@
             <td>{{ report.report_date }}</td>
             <td>{{ report.part_id }}</td>
             <td>{{ report.num_parts_finished }}</td>
-            <td>{{ report.production_status }}</td>
+            <td>{% if report.production_status %}
+                    Completed
+                {% else %}
+                    In Progress
+                {% endif %}
+            </td>
             <td>{{ report.estimated_completion_date }}</td>
             <td>{{ report.stage_id}}</td>
         </tr>
         {% else %}
         <tr>
-            <td colspan="4">No reports found.</td>
+            <td colspan="7">No reports found.</td>
         </tr>
         {% endfor %}
     </tbody>

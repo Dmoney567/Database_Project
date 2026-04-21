@@ -13,4 +13,15 @@ DB_NAME=databasename<br>
 Ensure an instance of your database is already created before connecting <br>
 Then if running the db setup with the same file structure, use "python app/database/setup.py" <br>
 Then reload with "uvicorn app.main:app --reload"<br>
+
+
+demo of 5 unique category of operations that will specifically require access to the<br>
+database (The following five operations are mandatory)<br>
+Create new entries <br>
+Read existing entries<br>
+Update existing entries<br>
+Delete existing entries<br>
+Search entries or perform user authentication (user validation through log-in operations)<br>
+
+
 <img width="3240" height="1813" alt="Screenshot (920)" src="https://github.com/user-attachments/assets/849a1847-2e90-46ee-a6be-77586fabdddd" />
