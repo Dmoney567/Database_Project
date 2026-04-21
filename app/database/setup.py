@@ -3,7 +3,12 @@ import os
 from dotenv import load_dotenv
 
 
+from passlib.context import CryptContext
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def hash_password(password: str):
+    return pwd_context.hash(password)
 
 load_dotenv()
 def init_db():
@@ -108,11 +113,49 @@ def init_db():
             cursor.execute(ddl)
             print(f"Table '{name}' verified/created.")
 
-    #seed data
-    #cursor.execute("INSERT IGNORE INTO Tiers VALUES (1,'Standerd',5.00),
-    # (2)") etc etc
+        #insert seed data
+        try:
+            
+            cursor.execute("INSERT IGNORE INTO USERS (username,password_hash) VALUES (%s, %s) ", ("admin", hash_password("admin123")))
 
-        conn.commit()
+             
+            cursor.executemany("""
+                INSERT IGNORE INTO PRODUCTION_STAGE (stage_name, stage_capacity, production_time)
+                VALUES (%s, %s, %s)
+            """, [
+                ("Cutting", 100, 30),
+                ("Assembly", 80, 45),
+                ("Packaging", 120, 20)
+            ])
+
+            cursor.executemany("""
+                INSERT INGORE INTO VENDOR (vend_name, vend_address, vend_phone, vend_email)
+                VALUES (%s, %s, %s, %s)
+            """, [
+                ("Vendor A", "Detroit, MI", "111-111-1111", "a@vendor.com"),
+                ("Vendor B", "Chicago, IL", "222-222-2222", "b@vendor.com"),
+                ("Vendor C", "Cleveland, OH", "333-333-3333", "c@vendor.com")
+            ])
+            
+            cursor.execute("""
+                INSERT IGNORE INTO PRODUCTION_ORDER 
+                (order_placed_date, order_due_date, order_status, order_production_flag, vend_id)
+                VALUES
+                ('2026-04-01', '2026-04-10', 'Pending', 0, 1),
+                ('2026-04-03', '2026-04-12', 'In Progress', 1, 2),
+                ('2026-04-05', '2026-04-15', 'Completed', 1, 1),
+                ('2026-04-06', '2026-04-20', 'Pending', 0, 3),
+                ('2026-04-07', '2026-04-18', 'Delayed', 0, 2)
+            """)
+
+            conn.commit()
+            print("Seed data inserted successfully.")
+        
+        except Exception as e:
+            print("Error inserting seeding data:", e)
+
+
+
         print("--database setup complete --")
 
     except mysql.connector.Error as e:

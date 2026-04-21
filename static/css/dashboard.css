@@ -69,11 +69,13 @@ th {
   background-color: #dc143c;
   color: white;
   padding: 10px;
+  text-align:left;
 }
 
 td {
   padding: 10px;
   border-bottom: 1px solid #e0e0e0;
+  text-align:left;
 }
 
 tr:hover {

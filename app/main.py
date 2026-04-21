@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 from starlette.middleware.sessions import SessionMiddleware
 from passlib.context import CryptContext
 import random
+import mysql.connector
+
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -21,6 +23,8 @@ app.add_middleware(
     SessionMiddleware,
     secret_key="super-secret-key",  # change this later
 )
+
+
 
 db_pool = pooling.MySQLConnectionPool(
     pool_name = "supply_pool",
@@ -60,6 +64,9 @@ async def login(request:Request):
     password = form["password"]
     ##connect to database user table
     user = get_user(username)
+    ##check if tables exist
+    if user is None:
+        return RedirectResponse(url="/login?error=db_not_initialized", status_code=302)
     ##check if user exists
     if user and verify_password(password, user["password_hash"]):
         request.session["username"] = username
@@ -106,14 +113,24 @@ async def register(request: Request):
 ##default dashboard
 @app.get("/dashboard")
 async def dashboard(request: Request):
-    return templates.TemplateResponse(request=request,name="dashboard.html",context={"request": request})
+    conn = get_db_conn()
+    cursor = conn.cursor(dictionary=True)
 
+    cursor.execute("SELECT * FROM PRODUCTION_ORDER")
+    orders = cursor.fetchall()
 
+    cursor.close()
+    conn.close()
 
-
-
-
-
+    return templates.TemplateResponse(
+        request = request,
+        name="dashboard.html",
+        context={
+            "request": request,
+            "orders": orders
+        }
+    )
+    ##return templates.TemplateResponse(request=request,name="dashboard.html",context={"request": request})
 
 
 
@@ -124,7 +141,9 @@ def get_user(username):
     try:
         cursor.execute("SELECT user_id,username, password_hash FROM USERS WHERE username = %s",(username,))
         return cursor.fetchone()
-    
+    except Exception as e:
+        print(f"Error getting user: {e}")
+
     finally:
         cursor.close()
         conn.close()
