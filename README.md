@@ -24,4 +24,5 @@ Delete existing entries<br>
 Search entries or perform user authentication (user validation through log-in operations)<br>
 
 
-<img width="3240" height="1813" alt="Screenshot (920)" src="https://github.com/user-attachments/assets/849a1847-2e90-46ee-a6be-77586fabdddd" />
+<img width="3240" height="1808" alt="Screenshot (924)" src="https://github.com/user-attachments/assets/62304978-e107-4474-9fa2-1e2ead6402d1" />
+
