@@ -12,4 +12,5 @@ DB_NAME=databasename<br>
 
 Ensure an instance of your database is already created before connecting <br>
 Then if running the db setup with the same file structure, use python app/database/setup.py <br>
+Then reload with uvicorn app.main:app --reload<br>
 <img width="3240" height="1813" alt="Screenshot (920)" src="https://github.com/user-attachments/assets/849a1847-2e90-46ee-a6be-77586fabdddd" />
