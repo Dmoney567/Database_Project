@@ -7,9 +7,7 @@ from mysql.connector import pooling
 from dotenv import load_dotenv
 from starlette.middleware.sessions import SessionMiddleware
 from passlib.context import CryptContext
-import random
-import mysql.connector
-
+from fastapi import Form
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -141,8 +139,40 @@ async def dashboard(request: Request):
         }
     )
 
+@app.get("/dashboard/orders/create")
+async def create_order(request:Request, order_id:int = Form(), order_date_placed :str = Form(), 
+                       order_date_due:str = Form() ,status: str = Form() ,
+                       production_flag:int = Form(), vendor_id:int = Form()):
+    conn = get_db_conn()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        query = """
+        INSERT INTO PRODUCTION_ORDERS
+        (order_id,order_date_placed,order_date_due,status,production_flag,vendor_id) 
+        WHERE 
 
 
+
+
+    """
+        cursor.executemany(query)
+
+        orders = cursor.fetchall()
+
+
+        return templates.TemplateResponse(
+        request = request,
+        name="dashboard.html",
+        context={
+            "request": request,
+            "orders": orders
+            
+        })
+    
+    finally:
+        cursor.close()
+        conn.close()
+    
 
 def get_user(username):
     conn = get_db_conn()

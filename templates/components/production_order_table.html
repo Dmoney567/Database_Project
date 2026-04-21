@@ -12,6 +12,8 @@
             <th>Status</th>
             <th>Production Flag</th>
             <th>Vendor ID</th>
+            <th>Update/Delete</th>
+            
         </tr>
     </thead>
     <tbody>
@@ -23,6 +25,22 @@
             <td>{{ order.order_status }}</td>
             <td>{{ order.order_production_flag }}</td>
             <td>{{ order.vend_id }}</td>
+
+            <td class="action-buttons">
+
+            <!-- UPDATE -->
+            <form method="GET" action="/dashboard/orders/update" style="display:inline;">
+                <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                <button class="btn small-btn">Update</button>
+            </form>
+
+            <!-- DELETE -->
+            <form method="POST" action="/dashboard/orders/delete" style="display:inline;">
+                <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                <button class="btn small-btn delete-btn">Delete</button>
+            </form>
+
+        </td>
         </tr>
         {% else %}
         <tr>
@@ -34,9 +52,27 @@
 
 
 
-<div class="modifyButtons">
-    <button class="btn">Create New Entry</button>
-    <button class="btn">Update Entry</button>
-    <button class="btn">Delete Entry</button>
+<div class="createRow">
+    <form method="POST" action="/dashboard/orders/create" class="createForm">
+
+        <input class="formInput" type="text" name="order_id" placeholder="Order ID" required>
+
+        <input class="formInput" type="date" name="order_placed_date" required>
+
+        <input class="formInput" type="date" name="order_due_date" required>
+
+        <input class="formInput" type="text" name="order_status" placeholder="Status" required>
+
+        <select class="formInput" name="order_production_flag">
+            <option value="0">Not Prod</option>
+            <option value="1">In Prod</option>
+        </select>
+
+        <input class="formInput" type="text" name="vend_id" placeholder="Vendor ID" required>
+
+        <button class="btn" type="submit">Insert</button>
+    </form>
 </div>
+
+
 

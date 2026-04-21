@@ -72,6 +72,7 @@ th {
   text-align:left;
 }
 
+
 td {
   padding: 10px;
   border-bottom: 1px solid #e0e0e0;
@@ -94,6 +95,8 @@ tr:hover {
     gap: 8px;
     margin-bottom: 16px;
 }
+
+
 
 .searchInput {
     flex: 1;
@@ -135,4 +138,41 @@ tr:hover {
 .header{
   display:flex;
   flex-direction: row;
+}
+
+
+.createForm {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 12px;
+    margin-top:8px;
+    flex-wrap: wrap; 
+}
+
+
+.formInput {
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    box-sizing: border-box;
+    min-width: 120px;
+}
+
+
+.formInput:focus {
+    outline: none;
+    border-color: #555;
+}
+
+
+.createForm .btn {
+    height: 40px; 
+}
+
+
+.secondRow {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
 }
