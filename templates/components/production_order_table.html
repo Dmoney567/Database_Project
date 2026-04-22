@@ -28,13 +28,13 @@
 
             <td class="action-buttons">
 
-            <!-- UPDATE -->
+            <!-- update -->
             <form method="GET" action="/dashboard/orders/update" style="display:inline;">
                 <input type="hidden" name="order_id" value="{{ order.order_id }}">
                 <button class="btn small-btn">Update</button>
             </form>
 
-            <!-- DELETE -->
+            <!-- delete -->
             <form method="POST" action="/dashboard/orders/delete" style="display:inline;">
                 <input type="hidden" name="order_id" value="{{ order.order_id }}">
                 <button class="btn small-btn delete-btn">Delete</button>
@@ -54,23 +54,21 @@
 
 <div class="createRow">
     <form method="POST" action="/dashboard/orders/create" class="createForm">
+        <input class="formInput" type="date" name="order_date_placed" required>
+        <input class="formInput" type="date" name="order_date_due" required>
+        <input class="formInput" type="text" name="status" placeholder="Status" required>
 
-        <input class="formInput" type="text" name="order_id" placeholder="Order ID" required>
-
-        <input class="formInput" type="date" name="order_placed_date" required>
-
-        <input class="formInput" type="date" name="order_due_date" required>
-
-        <input class="formInput" type="text" name="order_status" placeholder="Status" required>
-
-        <select class="formInput" name="order_production_flag">
+        <select class="formInput" name="production_flag">
             <option value="0">Not Prod</option>
             <option value="1">In Prod</option>
         </select>
 
-        <input class="formInput" type="text" name="vend_id" placeholder="Vendor ID" required>
-
-        <button class="btn" type="submit">Insert</button>
+        <select class="formInput" name="vendor_id">
+        {% for vendor in vendors %}
+        <option value="{{ vendor.vend_id }}">{{ vendor.vend_name }}</option>
+        {% endfor %}
+</select>
+            <button class="btn" type="submit">Insert</button>
     </form>
 </div>
 

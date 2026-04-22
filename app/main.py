@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from starlette.middleware.sessions import SessionMiddleware
 from passlib.context import CryptContext
 from fastapi import Form
-
+from datetime import datetime
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 #load environment variables
@@ -21,8 +21,6 @@ app.add_middleware(
     SessionMiddleware,
     secret_key="super-secret-key",  # change this later
 )
-
-
 
 db_pool = pooling.MySQLConnectionPool(
     pool_name = "supply_pool",
@@ -139,35 +137,30 @@ async def dashboard(request: Request):
         }
     )
 
-@app.get("/dashboard/orders/create")
-async def create_order(request:Request, order_id:int = Form(), order_date_placed :str = Form(), 
+##insert
+@app.post("/dashboard/orders/create")
+async def create_order(request:Request, 
+                       order_date_placed :str = Form(), 
                        order_date_due:str = Form() ,status: str = Form() ,
                        production_flag:int = Form(), vendor_id:int = Form()):
     conn = get_db_conn()
     cursor = conn.cursor(dictionary=True)
     try:
+        placed = datetime.strptime(order_date_placed, "%Y-%m-%d").date()
+        due = datetime.strptime(order_date_due, "%Y-%m-%d").date()
+
         query = """
-        INSERT INTO PRODUCTION_ORDERS
-        (order_id,order_date_placed,order_date_due,status,production_flag,vendor_id) 
-        WHERE 
+        INSERT IGNORE INTO PRODUCTION_ORDER
+        (order_placed_date, order_due_date, order_status, order_production_flag, vend_id)
+        VALUES (%s, %s, %s, %s, %s)
+        """
+        cursor.execute(query, (placed, due, status, production_flag, vendor_id))
+        conn.commit()
 
-
-
-
-    """
-        cursor.executemany(query)
-
+        cursor.execute("SELECT * FROM PRODUCTION_ORDER")
         orders = cursor.fetchall()
 
-
-        return templates.TemplateResponse(
-        request = request,
-        name="dashboard.html",
-        context={
-            "request": request,
-            "orders": orders
-            
-        })
+        return RedirectResponse(url="/dashboard", status_code=302)
     
     finally:
         cursor.close()
@@ -177,13 +170,11 @@ async def create_order(request:Request, order_id:int = Form(), order_date_placed
 def get_user(username):
     conn = get_db_conn()
     cursor = conn.cursor(dictionary=True)
-
     try:
         cursor.execute("SELECT user_id,username, password_hash FROM USERS WHERE username = %s",(username,))
         return cursor.fetchone()
     except Exception as e:
         print(f"Error getting user: {e}")
-
     finally:
         cursor.close()
         conn.close()
