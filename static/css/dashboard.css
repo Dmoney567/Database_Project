@@ -176,3 +176,56 @@ tr:hover {
     gap: 8px;
     margin-top: 8px;
 }
+
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.modal-box h3 {
+    margin: 0 0 0.5rem 0;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.modal-box .createForm {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.modal-box label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.modal-box .formInput {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}

@@ -168,20 +168,37 @@ async def create_order(request:Request,
     
 ##update
 @app.post("/dashboard/orders/update")
-async def update_order(request:Request, order_id:int = Form()):
+async def update_order(
+    request: Request,
+    order_id: int = Form(),
+    order_date_placed: str = Form(),
+    order_date_due: str = Form(),
+    status: str = Form(),
+    production_flag: int = Form(),
+    vendor_id: int = Form()
+):
     conn = get_db_conn()
-    cursor = conn.cursor(dictionary=True)
+    cursor = conn.cursor()
     try:
-        cursor.execute("SELECT * FROM PRODUCTION_ORDER WHERE order_id = %s", (order_id,))
-        order = cursor.fetchone()
+        placed = datetime.strptime(order_date_placed, "%Y-%m-%d").date()
+        due = datetime.strptime(order_date_due, "%Y-%m-%d").date()
 
-        cursor.execute("SELECT * FROM VENDOR")
-        vendors = cursor.fetchall()
-
-        return RedirectResponse(url="/dashboard", status_code=302)
+        cursor.execute("""
+            UPDATE PRODUCTION_ORDER
+            SET order_placed_date = %s,
+                order_due_date = %s,
+                order_status = %s,
+                order_production_flag = %s,
+                vend_id = %s
+            WHERE order_id = %s
+        """, (placed, due, status, production_flag, vendor_id, order_id))
+        conn.commit()
     finally:
         cursor.close()
         conn.close()
+
+    return RedirectResponse(url="/dashboard", status_code=302)
+
     
 
 
@@ -191,10 +208,12 @@ async def delete_order(request:Request, order_id:int = Form()):
     conn = get_db_conn()
     cursor = conn.cursor(dictionary=True)
     try:
-        cursor.execute("Delete FROM PRODUCTION_ORDER WHERE order_id = %s",(order_id,))
+        
+          # delete child rows first, then the parent
+        cursor.execute("DELETE FROM production_order_part WHERE order_id = %s", (order_id,))
+        cursor.execute("DELETE FROM PRODUCTION_ORDER WHERE order_id = %s", (order_id,))
         conn.commit()
-        cursor.execute("SELECT * FROM PRODUCTION_ORDER")
-        orders = cursor.fetchall()
+        
 
         return RedirectResponse(url="/dashboard", status_code=302)
   

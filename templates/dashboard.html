@@ -74,6 +74,27 @@
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelector('.tablinks').click();
     });
+
+    function openUpdateModal(orderId, datePlaced, dateDue, status, productionFlag, vendorId) {
+    document.getElementById('modal_order_id').value = orderId;
+    document.getElementById('modal_date_placed').value = datePlaced;
+    document.getElementById('modal_date_due').value = dateDue;
+    document.getElementById('modal_status').value = status;
+    document.getElementById('modal_production_flag').value = productionFlag;
+    document.getElementById('modal_vendor_id').value = vendorId;
+
+    const modal = document.getElementById('updateModal');
+    modal.style.display = 'flex';
+}
+
+function closeUpdateModal() {
+    document.getElementById('updateModal').style.display = 'none';
+}
+
+// Close if user clicks outside the modal box
+document.getElementById('updateModal').addEventListener('click', function(e) {
+    if (e.target === this) closeUpdateModal();
+});
 </script>
 
 
