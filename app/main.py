@@ -166,6 +166,43 @@ async def create_order(request:Request,
         cursor.close()
         conn.close()
     
+##update
+@app.post("/dashboard/orders/update")
+async def update_order(request:Request, order_id:int = Form()):
+    conn = get_db_conn()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT * FROM PRODUCTION_ORDER WHERE order_id = %s", (order_id,))
+        order = cursor.fetchone()
+
+        cursor.execute("SELECT * FROM VENDOR")
+        vendors = cursor.fetchall()
+
+        return RedirectResponse(url="/dashboard", status_code=302)
+    finally:
+        cursor.close()
+        conn.close()
+    
+
+
+##delete 
+@app.post("/dashboard/orders/delete")
+async def delete_order(request:Request, order_id:int = Form()):
+    conn = get_db_conn()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("Delete FROM PRODUCTION_ORDER WHERE order_id = %s",(order_id,))
+        conn.commit()
+        cursor.execute("SELECT * FROM PRODUCTION_ORDER")
+        orders = cursor.fetchall()
+
+        return RedirectResponse(url="/dashboard", status_code=302)
+  
+    finally:
+        cursor.close()
+        conn.close()
+
+
 
 def get_user(username):
     conn = get_db_conn()
