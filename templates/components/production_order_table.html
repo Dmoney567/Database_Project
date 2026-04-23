@@ -1,61 +1,61 @@
-<div class="search-bar">
-    <input class="searchInput" type="text" placeholder="Search orders...">
-    <button class="btn">Search</button>
+<div class="tableContainer">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Production Order ID</th>
+                <th>Order Placed Date</th>
+                <th>Order Due Date</th>
+                <th>Status</th>
+                <th>Production Flag</th>
+                <th>Vendor ID</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.order_id }}</td>
+                <td>{{ order.order_placed_date.strftime("%Y-%m-%d") }}</td>
+                <td>{{ order.order_due_date.strftime("%Y-%m-%d") }}</td>
+                <td>{{ order.order_status }}</td>
+                <td>
+                    {% if order.order_production_flag %}
+                        In Prod
+                    {% else %}
+                        Not Prod
+                    {% endif %}
+                </td>
+                <td>{{ order.vend_id }}</td>
+                <td>
+                    <!-- UPDATE -->
+                    {% set fmt_placed = order.order_placed_date.strftime("%Y-%m-%d") %}
+                    {% set fmt_due = order.order_due_date.strftime("%Y-%m-%d") %}
+
+                    <button class="btn small-btn" onclick="openModal('updateOrderModal', {
+                        modal_order_id: '{{ order.order_id }}',
+                        modal_date_placed: '{{ fmt_placed }}',
+                        modal_date_due: '{{ fmt_due }}',
+                        modal_status: '{{ order.order_status }}',
+                        modal_production_flag: '{{ order.order_production_flag | int }}',
+                        modal_vendor_id: '{{ order.vend_id }}'
+                    })">Update</button>
+                    <!-- DELETE -->
+                    <form method="POST" action="/dashboard/orders/delete" style="display:inline;">
+                        <input type="hidden" name="order_id" value="{{ order.order_id }}">
+                        <button class="btn small-btn delete-btn">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7">No orders found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
-<table class="table">
-    <thead>
-        <tr>
-            <!-- table display must match database table schema!!!!! -->
-            <th>Production Order ID</th>
-            <th>Order Placed Date</th>
-            <th>Order Due Date</th>
-            <th>Status</th>
-            <th>Production Flag</th>
-            <th>Vendor ID</th>
-            <th>Update/Delete</th>
-            
-        </tr>
-    </thead>
-    <tbody>
-        {% for order in orders %}
-        <tr>
-            <td>{{ order.order_id }}</td>
-            <td>{{ order.order_placed_date }}</td>
-            <td>{{ order.order_due_date }}</td>
-            <td>{{ order.order_status }}</td>
-            <td>{{ order.order_production_flag }}</td>
-            <td>{{ order.vend_id }}</td>
 
-            <td class="action-buttons">
-
-            <!-- update -->
-            <button class="btn small-btn" onclick="openUpdateModal(
-                '{{ order.order_id }}',
-                '{{ order.order_placed_date }}',
-                '{{ order.order_due_date }}',
-                '{{ order.order_status }}',
-                '{{ order.order_production_flag }}',
-                '{{ order.vend_id }}'
-            )">Update</button>
-
-            <!-- delete -->
-            <form method="POST" action="/dashboard/orders/delete" style="display:inline;">
-                <input type="hidden" name="order_id" value="{{ order.order_id }}">
-                <button class="btn small-btn delete-btn">Delete</button>
-            </form>
-
-        </td>
-        </tr>
-        {% else %}
-        <tr>
-            <td colspan="6">No orders found.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-
-
+<!-- INSERT -->
 <div class="createRow">
     <form method="POST" action="/dashboard/orders/create" class="createForm">
         <input class="formInput" type="date" name="order_date_placed" required>
@@ -68,27 +68,31 @@
         </select>
 
         <select class="formInput" name="vendor_id">
-        {% for vendor in vendors %}
-        <option value="{{ vendor.vend_id }}">{{ vendor.vend_name }}</option>
-        {% endfor %}
-</select>
+            {% for vendor in vendors %}
+                <option value="{{ vendor.vend_id }}">{{ vendor.vend_name }}</option>
+            {% endfor %}
+        </select>
+
         <button class="btn" type="submit">Insert</button>
     </form>
 </div>
 
-<!-- update modal -->
-<div id="updateModal" class="modal-overlay">
+<!-- UPDATE MODAL -->
+<div id="updateOrderModal" class="modal-overlay">
     <div class="modal-box">
         <h3>Update Order</h3>
         <form method="POST" action="/dashboard/orders/update" class="createForm">
             <input type="hidden" name="order_id" id="modal_order_id">
+
             <label>Order Placed Date</label>
-            <input class="formInput" type="date" name="order_date_placed" id="modal_date_placed" required>
+            <input class="formInput" type="date" name="order_date_placed" id="modal_date_placed">
+
             <label>Order Due Date</label>
-            <input class="formInput" type="date" name="order_date_due" id="modal_date_due" required>
+            <input class="formInput" type="date" name="order_date_due" id="modal_date_due">
+
             <label>Status</label>
-            <input class="formInput" type="text" name="status" id="modal_status" placeholder="Status" required>
-            
+            <input class="formInput" type="text" name="status" id="modal_status">
+
             <label>Production Flag</label>
             <select class="formInput" name="production_flag" id="modal_production_flag">
                 <option value="0">Not Prod</option>
@@ -98,15 +102,14 @@
             <label>Vendor</label>
             <select class="formInput" name="vendor_id" id="modal_vendor_id">
                 {% for vendor in vendors %}
-                <option value="{{ vendor.vend_id }}">{{ vendor.vend_name }}</option>
+                    <option value="{{ vendor.vend_id }}">{{ vendor.vend_name }}</option>
                 {% endfor %}
             </select>
 
             <div class="modal-actions">
                 <button class="btn" type="submit">Save</button>
-                <button class="btn delete-btn" type="button" onclick="closeUpdateModal()">Cancel</button>
+                <button class="btn delete-btn" type="button" onclick="closeModal('updateOrderModal')">Cancel</button>
             </div>
         </form>
     </div>
 </div>
-

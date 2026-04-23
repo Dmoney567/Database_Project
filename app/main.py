@@ -10,12 +10,28 @@ from passlib.context import CryptContext
 from fastapi import Form
 from datetime import datetime
 
+from database import get_db_conn
+from vendor import router as vendors_router
+from inventory import router as inventory_router
+from production_report import router as production_report_router
+
+
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 #load environment variables
-load_dotenv()
+
 app = FastAPI(title = "Supply Chain Database")
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+app.include_router(vendors_router)
+app.include_router(inventory_router)
+app.include_router(production_report_router)
+
+
+
+
+
 
 app.add_middleware(
     SessionMiddleware,
@@ -209,7 +225,7 @@ async def delete_order(request:Request, order_id:int = Form()):
     cursor = conn.cursor(dictionary=True)
     try:
         
-          # delete child rows first, then the parent
+        # delete child rows first, then the parent
         cursor.execute("DELETE FROM production_order_part WHERE order_id = %s", (order_id,))
         cursor.execute("DELETE FROM PRODUCTION_ORDER WHERE order_id = %s", (order_id,))
         conn.commit()

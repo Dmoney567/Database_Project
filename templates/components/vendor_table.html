@@ -1,41 +1,83 @@
-<div class="search-bar">
-    <input class="searchInput" type="text" placeholder="Search orders...">
-    <button class="btn">Search</button>
+<div class="tableContainer">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Vendor ID</th>
+                <th>Vendor Name</th>
+                <th>Vendor Address</th>
+                <th>Vendor Phone</th>
+                <th>Vendor Email</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vendor in vendors %}
+            <tr>
+                <td>{{ vendor.vend_id }}</td>
+                <td>{{ vendor.vend_name }}</td>
+                <td>{{ vendor.vend_address }}</td>
+                <td>{{ vendor.vend_phone }}</td>
+                <td>{{ vendor.vend_email }}</td>
+                <td>
+                    <!-- UPDATE -->
+                    <button class="btn small-btn" onclick="openModal('vendorModal', {
+                        modal_vendor_id: '{{ vendor.vend_id }}',
+                        modal_vend_name: '{{ vendor.vend_name }}',
+                        modal_vend_address: '{{ vendor.vend_address }}',
+                        modal_vend_phone: '{{ vendor.vend_phone }}',
+                        modal_vend_email: '{{ vendor.vend_email }}'
+                    })">Update</button>
+
+                    <!-- DELETE -->
+                    <form method="POST" action="/dashboard/vendors/delete" style="display:inline;">
+                        <input type="hidden" name="vendor_id" value="{{ vendor.vend_id }}">
+                        <button class="btn small-btn delete-btn">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6">No vendors found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
-<table class="table">
-    <thead>
-        <tr>
-            <!-- table display must match database table schema!!!!! -->
-            <th>Vendor ID</th>
-            <th>Vendor Name</th>
-            <th>Vendor Address</th>
-            <th>Vendor Phone</th>
-            <th>Production Flag</th>
-            <th>Vendor Email</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for vendor in vendors %}
-        <tr>
-            <td>{{ vendor.vend_id }}</td>
-            <td>{{ vendor.vend_name }}</td>
-            <td>{{ vendor.vend_address }}</td>
-            <td>{{ vendor.vend_phone }}</td>
-            <td>{{ vendor.vend_email }}</td>
-        </tr>
-        {% else %}
-        <tr>
-            <td colspan="5">No vendors found.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
 
-
-
-<div class="modifyButtons">
-    <button class="btn">Create New Entry</button>
-    <button class="btn">Update Entry</button>
-    <button class="btn">Delete Entry</button>
+<!-- INSERT -->
+<div class="createRow">
+    <form method="POST" action="/dashboard/vendors/create" class="createForm">
+        <input class="formInput" type="text" name="vend_name" placeholder="Vendor Name" required>
+        <input class="formInput" type="text" name="vend_address" placeholder="Address" required>
+        <input class="formInput" type="text" name="vend_phone" placeholder="Phone" required>
+        <input class="formInput" type="email" name="vend_email" placeholder="Email" required>
+        <button class="btn" type="submit">Insert</button>
+    </form>
 </div>
 
+<!-- UPDATE MODAL -->
+<div id="vendorModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3>Update Vendor</h3>
+        <form method="POST" action="/dashboard/vendors/update" class="createForm">
+            <input type="hidden" name="vendor_id" id="modal_vendor_id">
+
+            <label>Name</label>
+            <input class="formInput" type="text" name="vend_name" id="modal_vend_name" required>
+
+            <label>Address</label>
+            <input class="formInput" type="text" name="vend_address" id="modal_vend_address" required>
+
+            <label>Phone</label>
+            <input class="formInput" type="text" name="vend_phone" id="modal_vend_phone" required>
+
+            <label>Email</label>
+            <input class="formInput" type="email" name="vend_email" id="modal_vend_email" required>
+
+            <div class="modal-actions">
+                <button class="btn" type="submit">Save</button>
+                <button class="btn delete-btn" type="button" onclick="closeModal('vendorModal')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

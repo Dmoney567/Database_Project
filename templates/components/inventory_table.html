@@ -1,33 +1,65 @@
-<div class="search-bar">
-    <input class="searchInput" type="text" placeholder="Search orders...">
-    <button class="btn">Search</button>
-</div>
-<table>
-    <thead>
-        <tr>
-            <th>Material ID</th>
-            <th>Material Name</th>
-            <th>Quantity</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in inventory %}
-        <tr>
-            <td>{{ item.raw_mat_id }}</td>
-            <td>{{ item.raw_mat_name }}</td>
-            <td>{{ item.raw_mat_quantity }}</td>
-        </tr>
-        {% endfor %}
-        {% if not inventory %}
-        <tr>
-            <td colspan="3">No inventory data found.</td>
-        </tr>
-        {% endif %}
-    </tbody>
-</table>
-<div class="modifyButtons">
-    <button class="btn">Create New Entry</button>
-    <button class="btn">Update Entry</button>
-    <button class="btn">Delete Entry</button>
+<div class="tableContainer">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Material ID</th>
+                <th>Material Name</th>
+                <th>Quantity</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in inventory %}
+            <tr>
+                <td>{{ item.raw_mat_id }}</td>
+                <td>{{ item.raw_mat_name }}</td>
+                <td>{{ item.raw_mat_quantity }}</td>
+                <td>
+                    <button class="btn small-btn" onclick="openModal('materialModal', {
+                        modal_mat_id: '{{ item.raw_mat_id }}',
+                        modal_mat_name: '{{ item.raw_mat_name }}',
+                        modal_mat_quantity: '{{ item.raw_mat_quantity }}'
+                    })">Update</button>
+
+                    <form method="POST" action="/dashboard/materials/delete" style="display:inline;">
+                        <input type="hidden" name="raw_mat_id" value="{{ item.raw_mat_id }}">
+                        <button class="btn small-btn delete-btn">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4">No inventory data found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 
+<div class="createRow">
+    <form method="POST" action="/dashboard/materials/create" class="createForm">
+        <input class="formInput" type="text" name="raw_mat_name" placeholder="Material Name" required>
+        <input class="formInput" type="number" name="raw_mat_quantity" placeholder="Quantity" required>
+        <button class="btn" type="submit">Insert</button>
+    </form>
+</div>
+
+<div id="materialModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3>Update Material</h3>
+        <form method="POST" action="/dashboard/materials/update" class="createForm">
+            <input type="hidden" name="raw_mat_id" id="modal_mat_id">
+
+            <label>Material Name</label>
+            <input class="formInput" type="text" name="raw_mat_name" id="modal_mat_name" required>
+
+            <label>Quantity</label>
+            <input class="formInput" type="number" name="raw_mat_quantity" id="modal_mat_quantity" required>
+
+            <div class="modal-actions">
+                <button class="btn" type="submit">Save</button>
+                <button class="btn delete-btn" type="button" onclick="closeModal('materialModal')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

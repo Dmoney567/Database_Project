@@ -8,96 +8,102 @@
 </head>
 
 <body>
-
-<header>
-    <div className = "header">
-        <h1>Supply Chain Database</h1>
-        <nav>
-            <a href="/" class = logoutLink>Log Out</a>
-        </nav>
-    </div>
-   
+<header><div class = "header">
+    <h1>Supply Chain Database</h1>
+    
+</div>
+<nav><a href="/" class = logoutLink>Log Out</a></nav>
 </header>
-
 <main>
-
+    
     <!-- Tab links -->
     <div class="tab">
     <button class="tablinks" onclick="showData(event, 'Production_orders')">Production Orders</button>
     <button class="tablinks" onclick="showData(event, 'Vendors')">Vendors</button>
     <button class="tablinks" onclick="showData(event, 'Production_report')">Production Report</button>
-     <button class="tablinks" onclick="showData(event, 'Inventory')">Inventory</button>
+    <button class="tablinks" onclick="showData(event, 'Inventory')">Inventory</button>
     </div>
-       
-  
+          
+<div class ="borderBox">
+<div class="search-bar">
+    <input class="searchInput" type="text" placeholder="Search ...">
+    <button class="btn">Search</button>
+</div>
+
+
+</div>
+
     
-    <div id="Production_orders" class="tab-content">
-        {% include "components/production_order_table.html" %}
-    </div>
-    <div id="Vendors" class="tab-content">
-        {% include "components/vendor_table.html" %}
-    </div>
+        <div id="Production_orders" class="tab-content">
+            {% include "components/production_order_table.html" %}
+        </div>
+        <div id="Vendors" class="tab-content">
+            {% include "components/vendor_table.html" %}
+        </div>
 
-    <div id="Production_report" class="tab-content">
-        {% include "components/production_report_table.html" %}
-    </div>
+        <div id="Production_report" class="tab-content">
+            {% include "components/production_report_table.html" %}
+        </div>
 
-    <div id="Inventory" class="tab-content">
-        {% include "components/inventory_table.html" %}
-    </div>
+        <div id="Inventory" class="tab-content">
+            {% include "components/inventory_table.html" %}
+        </div>
+
 
 
 
 
 
 </main>
-
-
 <script>
-    function showData(evt, tabName) {
-        // Hide all tab content
-        document.querySelectorAll('.tab-content').forEach(tab => {
-            tab.style.display = 'none';
-        });
-
-        // Remove 'active' class from all tab buttons
-        document.querySelectorAll('.tablinks').forEach(btn => {
-            btn.classList.remove('active');
-        });
-
-        // Show the selected tab and mark button as active
-        document.getElementById(tabName).style.display = 'block';
-        evt.currentTarget.classList.add('active');
-    }
-
-    // Open the first tab by default on page load
-    document.addEventListener('DOMContentLoaded', () => {
-        document.querySelector('.tablinks').click();
+function showData(evt, tabName) {
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.style.display = 'none';
     });
 
-    function openUpdateModal(orderId, datePlaced, dateDue, status, productionFlag, vendorId) {
-    document.getElementById('modal_order_id').value = orderId;
-    document.getElementById('modal_date_placed').value = datePlaced;
-    document.getElementById('modal_date_due').value = dateDue;
-    document.getElementById('modal_status').value = status;
-    document.getElementById('modal_production_flag').value = productionFlag;
-    document.getElementById('modal_vendor_id').value = vendorId;
+    document.querySelectorAll('.tablinks').forEach(btn => {
+        btn.classList.remove('active');
+    });
 
-    const modal = document.getElementById('updateModal');
-    modal.style.display = 'flex';
+    document.getElementById(tabName).style.display = 'block';
+    evt.currentTarget.classList.add('active');
 }
 
-function closeUpdateModal() {
-    document.getElementById('updateModal').style.display = 'none';
-}
-
-// Close if user clicks outside the modal box
-document.getElementById('updateModal').addEventListener('click', function(e) {
-    if (e.target === this) closeUpdateModal();
+document.addEventListener('DOMContentLoaded', () => {
+    const firstTab = document.querySelector('.tablinks');
+    if (firstTab) firstTab.click();
 });
+
+
+function openModal(modalId, data) {
+    for (const key in data) {
+        const el = document.getElementById(key);
+        if (!el) continue;
+
+        if (el.tagName === "SELECT") {
+            el.value = data[key];
+        
+        } else {
+            el.value = data[key] ?? "";
+        }
+    }
+    document.getElementById(modalId).style.display = "flex";
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = "none";
+}
+
+document.addEventListener('click', function (e) {
+    const modals = document.querySelectorAll('.modal-overlay');
+
+    modals.forEach(modal => {
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+});
+
 </script>
-
-
-
 </body>
 </html>

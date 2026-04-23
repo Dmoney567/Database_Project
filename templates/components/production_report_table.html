@@ -1,49 +1,120 @@
-<div class="search-bar">
-    <input class="searchInput" type="text" placeholder="Search orders...">
-    <button class="btn">Search</button>
+<div class="tableContainer">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Report ID</th>
+                <th>Report Date</th>
+                <th>Part ID</th>
+                <th>Parts Finished</th>
+                <th>Production Status</th>
+                <th>Estimated Completion Date</th>
+                <th>Stage ID</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for report in reports %}
+            <tr>
+                <td>{{ report.report_id }}</td>
+                <td>{{ report.report_date.strftime("%Y-%m-%d") }}</td>
+                <td>{{ report.part_id }}</td>
+                <td>{{ report.num_parts_finished }}</td>
+                <td>
+                    {% if report.production_status %}
+                        Completed
+                    {% else %}
+                        In Progress
+                    {% endif %}
+                </td>
+                <td>
+                    {% if report.estimated_completion_date %}
+                        {{ report.estimated_completion_date.strftime("%Y-%m-%d") }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>{{ report.stage_id }}</td>
+                <td>
+                    <!-- UPDATE -->
+                    {% set fmt_report_date = report.report_date.strftime("%Y-%m-%d") %}
+                    {% set fmt_est_date = report.estimated_completion_date.strftime("%Y-%m-%d") if report.estimated_completion_date else "" %}
+
+                    <button class="btn small-btn" onclick="openModal('reportModal', {
+                        modal_report_id: '{{ report.report_id }}',
+                        modal_report_date: '{{ fmt_report_date }}',
+                        modal_part_id: '{{ report.part_id }}',
+                        modal_parts_finished: '{{ report.num_parts_finished }}',
+                        modal_status: '{{ report.production_status | int }}',
+                        modal_est_date: '{{ fmt_est_date }}',
+                        modal_stage_id: '{{ report.stage_id }}'
+                    })">Update</button>
+                    <!-- DELETE -->
+                    <form method="POST" action="/dashboard/reports/delete" style="display:inline;">
+                        <input type="hidden" name="report_id" value="{{ report.report_id }}">
+                        <button class="btn small-btn delete-btn">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8">No reports found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
-<table class="table">
-    <thead>
-        <tr>
-            <!-- table display must match database table schema!!!!! -->
-            <th>Report ID</th>
-            <th>Report Date</th>
-            <th>Part ID</th>
-            <th>Parts Finished</th>
-            <th>Production Status</th>
-            <th>Estimated Completion Date</th>
-            <th>Stage ID</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for report in reports %}
-        <tr>
-            <td>{{ report.report_id }}</td>
-            <td>{{ report.report_date }}</td>
-            <td>{{ report.part_id }}</td>
-            <td>{{ report.num_parts_finished }}</td>
-            <td>{% if report.production_status %}
-                    Completed
-                {% else %}
-                    In Progress
-                {% endif %}
-            </td>
-            <td>{{ report.estimated_completion_date }}</td>
-            <td>{{ report.stage_id}}</td>
-        </tr>
-        {% else %}
-        <tr>
-            <td colspan="7">No reports found.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
 
+<!-- INSERT -->
+<div class="createRow">
+    <form method="POST" action="/dashboard/reports/create" class="createForm">
+        <input class="formInput" type="date" name="report_date" required>
+        <input class="formInput" type="number" name="part_id" placeholder="Part ID" required>
+        <input class="formInput" type="number" name="num_parts_finished" placeholder="Parts Finished" required>
 
+        <select class="formInput" name="production_status">
+            <option value="0">In Progress</option>
+            <option value="1">Completed</option>
+        </select>
 
-<div class="modifyButtons">
-    <button class="btn">Create New Entry</button>
-    <button class="btn">Update Entry</button>
-    <button class="btn">Delete Entry</button>
+        <input class="formInput" type="date" name="estimated_completion_date">
+        <input class="formInput" type="number" name="stage_id" placeholder="Stage ID">
+
+        <button class="btn" type="submit">Insert</button>
+    </form>
 </div>
 
+<!-- UPDATE MODAL -->
+<div id="reportModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3>Update Report</h3>
+        <form method="POST" action="/dashboard/reports/update" class="createForm">
+            <input type="hidden" name="report_id" id="modal_report_id">
+
+            <label>Report Date</label>
+            <input class="formInput" type="date" name="report_date" id="modal_report_date">
+
+            <label>Part ID</label>
+            <input class="formInput" type="number" name="part_id" id="modal_part_id">
+
+            <label>Parts Finished</label>
+            <input class="formInput" type="number" name="num_parts_finished" id="modal_parts_finished">
+
+            <label>Production Status</label>
+            <select class="formInput" name="production_status" id="modal_status">
+                <option value="0">In Progress</option>
+                <option value="1">Completed</option>
+            </select>
+
+            <label>Estimated Completion</label>
+            <input class="formInput" type="date" name="estimated_completion_date" id="modal_est_date">
+
+            <label>Stage ID</label>
+            <input class="formInput" type="number" name="stage_id" id="modal_stage_id">
+
+            <div class="modal-actions">
+                <button class="btn" type="submit">Save</button>
+                <button class="btn delete-btn" type="button" onclick="closeModal('reportModal')">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
