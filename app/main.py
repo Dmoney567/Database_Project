@@ -10,12 +10,10 @@ from passlib.context import CryptContext
 from fastapi import Form
 from datetime import datetime
 
-from database import get_db_conn
-from vendor import router as vendors_router
-from inventory import router as inventory_router
-from production_report import router as production_report_router
-
-
+from app.database_Connection import get_db_conn
+from app.vendor import router as vendors_router
+from app.inventory import router as inventory_router
+from app.production_report import router as production_report_router
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 #load environment variables
@@ -29,32 +27,11 @@ app.include_router(inventory_router)
 app.include_router(production_report_router)
 
 
-
-
-
-
 app.add_middleware(
     SessionMiddleware,
     secret_key="super-secret-key",  # change this later
 )
 
-db_pool = pooling.MySQLConnectionPool(
-    pool_name = "supply_pool",
-    pool_size = 10,
-    host=os.getenv("DB_HOST"),
-    user = os.getenv("DB_USER"),
-    password = os.getenv("DB_PASS"),
-    database = os.getenv("DB_NAME")
-)
-
-
-print("DB_HOST =", os.getenv("DB_HOST"))
-print("DB_USER =", os.getenv("DB_USER"))
-print("DB_NAME =", os.getenv("DB_NAME"))
-
-def get_db_conn():
-    """retrieves a connection from the pre-warmed connection pool"""
-    return db_pool.get_connection()
 
 ###ROUTES##################################################################
 ##defaults to login page
@@ -129,6 +106,9 @@ async def dashboard(request: Request):
     cursor.execute("SELECT * FROM PRODUCTION_ORDER")
     orders = cursor.fetchall()
 
+    cursor.execute("SELECT order_id, part_id, quantity FROM PRODUCTION_ORDER_PART")
+    parts = cursor.fetchall()
+
     cursor.execute("SELECT * FROM VENDOR")
     vendors = cursor.fetchall()
 
@@ -149,7 +129,8 @@ async def dashboard(request: Request):
             "orders": orders,
             "vendors": vendors,
             "reports":reports,
-            "inventory":inventory
+            "inventory":inventory,
+            "parts":parts
         }
     )
 

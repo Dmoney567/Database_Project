@@ -5,6 +5,7 @@
                 <th>Production Order ID</th>
                 <th>Order Placed Date</th>
                 <th>Order Due Date</th>
+                <th>Parts</th>
                 <th>Status</th>
                 <th>Production Flag</th>
                 <th>Vendor ID</th>
@@ -17,6 +18,10 @@
                 <td>{{ order.order_id }}</td>
                 <td>{{ order.order_placed_date.strftime("%Y-%m-%d") }}</td>
                 <td>{{ order.order_due_date.strftime("%Y-%m-%d") }}</td>
+                <td>
+                    <!--view parts button-->
+                    <button class="btn small-btn" onclick="openPartsModal(order.order_id )">View Parts</button>
+                </td>
                 <td>{{ order.order_status }}</td>
                 <td>
                     {% if order.order_production_flag %}
@@ -31,6 +36,7 @@
                     {% set fmt_placed = order.order_placed_date.strftime("%Y-%m-%d") %}
                     {% set fmt_due = order.order_due_date.strftime("%Y-%m-%d") %}
 
+                    <!--fmt variables are just temporary placeholders for conversion of the datetime variables-->
                     <button class="btn small-btn" onclick="openModal('updateOrderModal', {
                         modal_order_id: '{{ order.order_id }}',
                         modal_date_placed: '{{ fmt_placed }}',
@@ -48,7 +54,7 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="7">No orders found.</td>
+                <td colspan="8">No orders found.</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -113,3 +119,4 @@
         </form>
     </div>
 </div>
+

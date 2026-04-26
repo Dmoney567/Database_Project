@@ -1,8 +1,6 @@
 import mysql.connector
 import os
 from dotenv import load_dotenv
-
-
 from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -62,6 +60,13 @@ def init_db():
                 )
             """,
 
+              "Part":"""
+            CREATE TABLE IF NOT EXISTS PART (
+                part_id INT AUTO_INCREMENT PRIMARY KEY,
+                part_name VARCHAR(100) NOT NULL
+            )
+            """,
+
             "Production_Order": """
                 CREATE TABLE IF NOT EXISTS PRODUCTION_ORDER (
                     order_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -74,14 +79,24 @@ def init_db():
                 )
             """,
 
+          
+
             "Production_Order_Part": """
                 CREATE TABLE IF NOT EXISTS PRODUCTION_ORDER_PART (
-                    order_id INT,
-                    part_id INT,
-                    quantity INT NOT NULL,
-                    unit_price DECIMAL(10,2),
-                    PRIMARY KEY (order_id, part_id),
-                    FOREIGN KEY (order_id) REFERENCES PRODUCTION_ORDER(order_id)
+                order_id INT,
+                part_id INT,
+                quantity INT NOT NULL,
+                unit_price DECIMAL(10,2),
+
+                PRIMARY KEY (order_id, part_id),
+
+                FOREIGN KEY (order_id)
+                    REFERENCES PRODUCTION_ORDER(order_id)
+                    ON DELETE CASCADE,
+
+                FOREIGN KEY (part_id)
+                    REFERENCES PART(part_id)
+                    ON DELETE RESTRICT
                 )
             """,
 
@@ -91,7 +106,8 @@ def init_db():
                     part_id INT,
                     quantity INT NOT NULL,
                     PRIMARY KEY (raw_mat_id, part_id),
-                    FOREIGN KEY (raw_mat_id) REFERENCES RAW_MATERIAL(raw_mat_id)
+                    FOREIGN KEY (raw_mat_id) REFERENCES RAW_MATERIAL(raw_mat_id),
+                    FOREIGN KEY (part_id) REFERENCES PART(part_id)
                 )
             """,
 
@@ -104,7 +120,8 @@ def init_db():
                     production_status BOOLEAN NOT NULL,
                     estimated_completion_date DATE,
                     stage_id INT,
-                    FOREIGN KEY (stage_id) REFERENCES PRODUCTION_STAGE(stage_id)
+                    FOREIGN KEY (stage_id) REFERENCES PRODUCTION_STAGE(stage_id),
+                    FOREIGN KEY (part_id) REFERENCES PART(part_id)
                 )
             """}
     
@@ -153,6 +170,21 @@ def init_db():
 
         try:
             cursor.execute("""
+            INSERT INTO PART (part_name) VALUES
+            ('Gear'),
+            ('Bolt'),
+            ('Panel'),
+            ('Motor'),
+            ('Shaft')
+            """)
+            conn.commit()
+            print("Parts are seeded.")
+        except Exception as e:
+            print("Error seeding Parts:", e)
+
+
+        try:
+            cursor.execute("""
                 INSERT IGNORE INTO PRODUCTION_ORDER 
                 (order_placed_date, order_due_date, order_status, order_production_flag, vend_id)
                 VALUES
@@ -183,16 +215,16 @@ def init_db():
 
         try:
             cursor.executemany("""
-                INSERT IGNORE INTO PRODUCTION_ORDER_PART 
-                (order_id, part_id, quantity, unit_price)
-                VALUES (%s, %s, %s, %s)
-            """, [
-                (1, 101, 10, 25.00),
-                (1, 102, 5, 40.00),
-                (2, 103, 20, 15.00),
-                (3, 101, 8, 25.00),
-                (4, 104, 12, 30.00)
-            ])
+            INSERT IGNORE INTO PRODUCTION_ORDER_PART 
+            (order_id, part_id, quantity, unit_price)
+            VALUES (%s, %s, %s, %s)
+        """, [
+            (1, 1, 10, 25.00),  ##Gear
+            (1, 2, 5, 40.00),   ##Bolt
+            (2, 3, 20, 15.00),  ##Panel
+            (3, 1, 8, 25.00),  
+            (4, 4, 12, 30.00)   
+        ])
             conn.commit()
             print("Production order parts seeded.")
         except Exception as e:
@@ -200,14 +232,14 @@ def init_db():
 
         try:
             cursor.executemany("""
-                INSERT IGNORE INTO BILL_OF_MATERIALS 
-                (raw_mat_id, part_id, quantity)
-                VALUES (%s, %s, %s)
+            INSERT IGNORE INTO BILL_OF_MATERIALS 
+            (raw_mat_id, part_id, quantity)
+            VALUES (%s, %s, %s)
             """, [
-                (1, 101, 5),
-                (2, 102, 3),
-                (1, 103, 7),
-                (3, 104, 2)
+                (1, 1, 5),  
+                (2, 2, 3), 
+                (1, 3, 7),  
+                (3, 4, 2)  
             ])
             conn.commit()
             print("Bill of materials seeded.")
@@ -219,16 +251,15 @@ def init_db():
                 INSERT IGNORE INTO PRODUCTION_REPORT 
                 (report_date, part_id, num_parts_finished, production_status, estimated_completion_date, stage_id)
                 VALUES (%s, %s, %s, %s, %s, %s)
-            """, [
-                ("2026-04-02", 101, 5, True, "2026-04-10", 1),
-                ("2026-04-04", 102, 3, False, "2026-04-12", 2),
-                ("2026-04-06", 103, 10, True, "2026-04-15", 3)
-            ])
+                """, [
+                    ("2026-04-02", 1, 5, True, "2026-04-10", 1),
+                    ("2026-04-04", 2, 3, False, "2026-04-12", 2),
+                    ("2026-04-06", 3, 10, True, "2026-04-15", 3)
+                ])
             conn.commit()
             print("Production reports seeded.")
         except Exception as e:
-    
-            print("--database setup complete --")
+            print("--database setup failed --")
 
     except mysql.connector.Error as e:
         print(f"Database error during setup: {e}")
