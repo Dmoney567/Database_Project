@@ -20,7 +20,7 @@
                 <td>{{ order.order_due_date.strftime("%Y-%m-%d") }}</td>
                 <td>
                     <!--view parts button-->
-                    <button class="btn small-btn" onclick="openPartsModal(order.order_id )">View Parts</button>
+                    <button class="btn small-btn" onclick="openPartsModal('{{ order.order_id }}')">View Parts</button>
                 </td>
                 <td>{{ order.order_status }}</td>
                 <td>
@@ -119,4 +119,3 @@
         </form>
     </div>
 </div>
-

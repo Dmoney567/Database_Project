@@ -106,8 +106,6 @@ async def dashboard(request: Request):
     cursor.execute("SELECT * FROM PRODUCTION_ORDER")
     orders = cursor.fetchall()
 
-    cursor.execute("SELECT order_id, part_id, quantity FROM PRODUCTION_ORDER_PART")
-    parts = cursor.fetchall()
 
     cursor.execute("SELECT * FROM VENDOR")
     vendors = cursor.fetchall()
@@ -129,8 +127,8 @@ async def dashboard(request: Request):
             "orders": orders,
             "vendors": vendors,
             "reports":reports,
-            "inventory":inventory,
-            "parts":parts
+            "inventory":inventory
+            
         }
     )
 
@@ -196,7 +194,6 @@ async def update_order(
 
     return RedirectResponse(url="/dashboard", status_code=302)
 
-    
 
 
 ##delete 
@@ -218,6 +215,21 @@ async def delete_order(request:Request, order_id:int = Form()):
         cursor.close()
         conn.close()
 
+#route to show parts associated with an order
+@app.get("dashboard/orders/parts")
+async def get_order_parts(order_id: int, request: Request):
+    conn = get_db_conn()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute(
+            "SELECT part_id, quantity FROM PRODUCTION_ORDER_PART WHERE order_id = %s",
+            (order_id,)
+        )
+        parts = cursor.fetchall()
+        return JSONResponse(content={"parts": parts})
+    finally:
+        cursor.close()
+        conn.close()
 
 
 def get_user(username):
