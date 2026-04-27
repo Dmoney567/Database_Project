@@ -12,17 +12,22 @@
                 <th>Actions</th>
             </tr>
         </thead>
+
         <tbody>
             {% for order in orders %}
             <tr>
                 <td>{{ order.order_id }}</td>
                 <td>{{ order.order_placed_date.strftime("%Y-%m-%d") }}</td>
                 <td>{{ order.order_due_date.strftime("%Y-%m-%d") }}</td>
+
                 <td>
-                    <!--view parts button-->
-                    <button class="btn small-btn" onclick="openPartsModal('{{ order.order_id }}')">View Parts</button>
+                    <button class="btn small-btn" type="button" onclick="openPartsModal('{{ order.order_id }}')">
+                        View Parts
+                    </button>
                 </td>
+
                 <td>{{ order.order_status }}</td>
+
                 <td>
                     {% if order.order_production_flag %}
                         In Prod
@@ -30,28 +35,31 @@
                         Not Prod
                     {% endif %}
                 </td>
+
                 <td>{{ order.vend_id }}</td>
+
                 <td>
-                    <!-- UPDATE -->
                     {% set fmt_placed = order.order_placed_date.strftime("%Y-%m-%d") %}
                     {% set fmt_due = order.order_due_date.strftime("%Y-%m-%d") %}
 
-                    <!--fmt variables are just temporary placeholders for conversion of the datetime variables-->
-                    <button class="btn small-btn" onclick="openModal('updateOrderModal', {
+                    <button class="btn small-btn" type="button" onclick="openModal('updateOrderModal', {
                         modal_order_id: '{{ order.order_id }}',
                         modal_date_placed: '{{ fmt_placed }}',
                         modal_date_due: '{{ fmt_due }}',
                         modal_status: '{{ order.order_status }}',
                         modal_production_flag: '{{ order.order_production_flag | int }}',
                         modal_vendor_id: '{{ order.vend_id }}'
-                    })">Update</button>
-                    <!-- DELETE -->
+                    })">
+                        Update
+                    </button>
+
                     <form method="POST" action="/dashboard/orders/delete" style="display:inline;">
                         <input type="hidden" name="order_id" value="{{ order.order_id }}">
-                        <button class="btn small-btn delete-btn">Delete</button>
+                        <button class="btn small-btn delete-btn" type="submit">Delete</button>
                     </form>
                 </td>
             </tr>
+
             {% else %}
             <tr>
                 <td colspan="8">No orders found.</td>
@@ -61,7 +69,6 @@
     </table>
 </div>
 
-<!-- INSERT -->
 <div class="createRow">
     <form method="POST" action="/dashboard/orders/create" class="createForm">
         <input class="formInput" type="date" name="order_date_placed" required>
@@ -83,10 +90,10 @@
     </form>
 </div>
 
-<!-- UPDATE MODAL -->
 <div id="updateOrderModal" class="modal-overlay">
     <div class="modal-box">
         <h3>Update Order</h3>
+
         <form method="POST" action="/dashboard/orders/update" class="createForm">
             <input type="hidden" name="order_id" id="modal_order_id">
 
@@ -117,5 +124,19 @@
                 <button class="btn delete-btn" type="button" onclick="closeModal('updateOrderModal')">Cancel</button>
             </div>
         </form>
+    </div>
+</div>
+
+<div id="partsModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3 id="partsModalTitle">Order Parts</h3>
+
+        <div id="partsModalBody">
+            Loading parts...
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn delete-btn" type="button" onclick="closeModal('partsModal')">Close</button>
+        </div>
     </div>
 </div>
